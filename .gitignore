@@ -284,3 +284,7 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+
+# For testing purposes only.
+test_image.svg

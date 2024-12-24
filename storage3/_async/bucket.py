@@ -8,8 +8,9 @@ from ..exceptions import StorageApiError
 from ..types import CreateOrUpdateBucketOptions, RequestMethod
 from ..utils import AsyncClient
 from .file_api import AsyncBucket
+from .resumable import AsyncResumableUpload
 
-__all__ = ["AsyncStorageBucketAPI"]
+__all__ = ("AsyncStorageBucketAPI",)
 
 
 class AsyncStorageBucketAPI:
@@ -17,6 +18,13 @@ class AsyncStorageBucketAPI:
 
     def __init__(self, session: AsyncClient) -> None:
         self._client = session
+        self._resumable = None
+
+    @property
+    def resumable(self):
+        if self._resumable is None:
+            self._resumable = AsyncResumableUpload(self._client)
+        return self._resumable
 
     async def _request(
         self,

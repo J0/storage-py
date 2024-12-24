@@ -8,8 +8,9 @@ from ..exceptions import StorageApiError
 from ..types import CreateOrUpdateBucketOptions, RequestMethod
 from ..utils import SyncClient
 from .file_api import SyncBucket
+from .resumable import ResumableUpload
 
-__all__ = ["SyncStorageBucketAPI"]
+__all__ = ("SyncStorageBucketAPI",)
 
 
 class SyncStorageBucketAPI:
@@ -17,6 +18,7 @@ class SyncStorageBucketAPI:
 
     def __init__(self, session: SyncClient) -> None:
         self._client = session
+        self._resumable = None
 
     def _request(
         self,
@@ -32,6 +34,13 @@ class SyncStorageBucketAPI:
             raise StorageApiError(resp["message"], resp["error"], resp["statusCode"])
 
         return response
+
+    @property
+    def resumable(self):
+        if self._resumable is None:
+            self._resumable = ResumableUpload(self._client)
+
+        return self._resumable
 
     def list_buckets(self) -> list[SyncBucket]:
         """Retrieves the details of all storage buckets within an existing product."""
